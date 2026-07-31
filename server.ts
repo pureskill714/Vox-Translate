@@ -13,14 +13,22 @@ const PORT = 3000;
 app.use(express.json({ limit: '50mb' }));
 
 // Initialize Gemini Client
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY || '',
-  httpOptions: {
-    headers: {
-      'User-Agent': 'aistudio-build',
+function getAiClient(): GoogleGenAI {
+  const apiKey = process.env.GEMINI_API_KEY?.trim();
+  if (!apiKey) {
+    console.warn('[Warning] GEMINI_API_KEY is missing in environment variables or .env file!');
+  } else if (!apiKey.startsWith('AIzaSy')) {
+    console.warn('[Warning] GEMINI_API_KEY does not start with "AIzaSy". Google Gemini API keys usually start with "AIzaSy". Please check your .env file!');
+  }
+  return new GoogleGenAI({
+    apiKey: apiKey || '',
+    httpOptions: {
+      headers: {
+        'User-Agent': 'aistudio-build',
+      },
     },
-  },
-});
+  });
+}
 
 // Helper: Convert raw PCM 24kHz mono buffer to standard WAV buffer
 function createWavBuffer(pcmBuffer: Buffer, sampleRate = 24000, numChannels = 1, bitsPerSample = 16): Buffer {
@@ -98,6 +106,7 @@ async function generateContentWithFallback(params: {
       }
 
       console.log(`[Gemini API] Executing request using model variant: ${modelName}`);
+      const ai = getAiClient();
       const result = await ai.models.generateContent({
         model: modelName,
         contents: params.contents,
@@ -143,6 +152,7 @@ async function generateSyntheticSpeech(text: string, voiceName = 'Kore'): Promis
       }
 
       try {
+        const ai = getAiClient();
         const ttsResponse = await ai.models.generateContent({
           model: modelName,
           contents: [{ parts: [{ text }] }],

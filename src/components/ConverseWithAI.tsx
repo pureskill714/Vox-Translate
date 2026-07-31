@@ -12,7 +12,6 @@ import {
   Check,
   Sparkles,
   Lightbulb,
-  MessageSquare,
   FastForward,
   AlertCircle,
 } from 'lucide-react';
@@ -506,13 +505,6 @@ export const ConverseWithAI: React.FC<ConverseWithAIProps> = ({ autoPlay }) => {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const starterPrompts = [
-    `Hello, how are you today?`,
-    `What's your favorite local dish in your country?`,
-    `Can you recommend a good place to visit?`,
-    `Let's practice ordering coffee together!`,
-  ];
-
   return (
     <div className="max-w-4xl mx-auto px-4 py-6 flex flex-col h-[calc(100vh-5rem)]">
       {/* Top Configuration Bar */}
@@ -779,25 +771,6 @@ export const ConverseWithAI: React.FC<ConverseWithAIProps> = ({ autoPlay }) => {
 
         <div ref={chatBottomRef} />
       </div>
-
-      {/* Starter Prompts (shown when conversation is short) */}
-      {messages.length <= 2 && !isProcessing && (
-        <div className="mb-3 flex items-center gap-2 overflow-x-auto pb-1">
-          <span className="text-[11px] font-medium text-slate-400 whitespace-nowrap flex items-center space-x-1">
-            <MessageSquare className="w-3 h-3" />
-            <span>Starters:</span>
-          </span>
-          {starterPrompts.map((promptText, idx) => (
-            <button
-              key={idx}
-              onClick={() => handleSendText(promptText)}
-              className="text-xs bg-white hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 border border-slate-200 hover:border-indigo-200 px-3 py-1.5 rounded-full whitespace-nowrap transition-colors shadow-2xs"
-            >
-              {promptText}
-            </button>
-          ))}
-        </div>
-      )}
 
       {/* Floating Audio Visualizer Modal Overlay */}
       <AudioVisualizer
