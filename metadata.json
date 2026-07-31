@@ -1,0 +1,10 @@
+{
+  "name": "VoxTranslate AI",
+  "description": "Real-time AI speech language detection, instant translation, and natural synthetic voice synthesis for seamless two-way multilingual conversations.",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
