@@ -104,8 +104,8 @@ export const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
   };
 
   return (
-    <div id="recording-visualizer-card" className="fixed bottom-24 left-1/2 transform -translate-x-1/2 z-50 w-11/12 max-w-md bg-white/95 border border-indigo-200 rounded-2xl p-5 shadow-2xl backdrop-blur-xl ring-1 ring-slate-900/5 animate-in fade-in slide-in-from-bottom-5">
-      <div className="flex items-center justify-between mb-3">
+    <div id="recording-visualizer-card" className="fixed bottom-20 sm:bottom-24 left-1/2 transform -translate-x-1/2 z-50 w-[94vw] max-w-md bg-white/95 border border-indigo-200 rounded-2xl p-3.5 sm:p-5 shadow-2xl backdrop-blur-xl ring-1 ring-slate-900/5 animate-in fade-in slide-in-from-bottom-5">
+      <div className="flex items-center justify-between mb-2 sm:mb-3">
         <div className="flex items-center space-x-2">
           <span className="relative flex h-2.5 w-2.5">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>

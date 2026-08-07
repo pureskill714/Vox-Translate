@@ -25,10 +25,10 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
             <div>
               <div className="flex items-center space-x-2.5">
-                <h1 className="text-lg font-bold tracking-tight text-slate-900 font-sans">
+                <h1 className="text-base sm:text-lg font-bold tracking-tight text-slate-900 font-sans">
                   VoxTranslate <span className="text-indigo-600">AI</span>
                 </h1>
-                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-[10px] font-semibold uppercase tracking-widest text-emerald-700">
+                <div className="hidden sm:flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-[10px] font-semibold uppercase tracking-widest text-emerald-700">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                   System Ready
                 </div>
@@ -77,8 +77,8 @@ export const Header: React.FC<HeaderProps> = ({
                   : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'
               }`}
             >
-              <Volume2 className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">{autoPlay ? 'Auto Voice: ON' : 'Auto Voice: OFF'}</span>
+              <Volume2 className="w-3.5 h-3.5 flex-shrink-0" />
+              <span className="text-[11px] sm:text-xs font-semibold">{autoPlay ? 'Voice ON' : 'Voice OFF'}</span>
             </button>
           </div>
         </div>

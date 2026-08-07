@@ -321,12 +321,12 @@ export const TwoWayTranslator: React.FC<TwoWayTranslatorProps> = ({ autoPlay }) 
   };
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-4rem)] max-w-5xl mx-auto px-4 py-4 justify-between">
+    <div className="flex flex-col min-h-[calc(100dvh-5rem)] max-w-5xl mx-auto px-2 sm:px-4 py-3 sm:py-4 justify-between">
       {/* Top Header: Language Configuration Dock */}
-      <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm mb-4">
-        <div className="grid grid-cols-1 md:grid-cols-11 gap-3 items-center">
+      <div className="bg-white border border-slate-200/80 rounded-2xl p-3 sm:p-4 shadow-sm mb-3 sm:mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-11 gap-2.5 sm:gap-3 items-center">
           {/* Speaker A Language */}
-          <div className="md:col-span-5 flex flex-col gap-1">
+          <div className="sm:col-span-5 flex flex-col gap-1">
             <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-indigo-600"></span>
               Primary Speaker Language
@@ -339,11 +339,11 @@ export const TwoWayTranslator: React.FC<TwoWayTranslatorProps> = ({ autoPlay }) 
           </div>
 
           {/* Swap Languages Button */}
-          <div className="md:col-span-1 flex justify-center py-1">
+          <div className="sm:col-span-1 flex justify-center py-0.5 sm:py-1">
             <button
               id="swap-languages-btn"
               onClick={handleSwapLanguages}
-              className="p-3 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl border border-slate-200 transition-all hover:scale-105 active:scale-95 shadow-xs"
+              className="p-2.5 sm:p-3 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl border border-slate-200 transition-all hover:scale-105 active:scale-95 shadow-xs"
               title="Swap Speaker Languages"
             >
               <ArrowRightLeft className="w-4 h-4 text-indigo-600" />
@@ -351,7 +351,7 @@ export const TwoWayTranslator: React.FC<TwoWayTranslatorProps> = ({ autoPlay }) 
           </div>
 
           {/* Speaker B Language */}
-          <div className="md:col-span-5 flex flex-col gap-1">
+          <div className="sm:col-span-5 flex flex-col gap-1">
             <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
               Target Speaker Language
@@ -429,9 +429,9 @@ export const TwoWayTranslator: React.FC<TwoWayTranslatorProps> = ({ autoPlay }) 
       />
 
       {/* Bottom Dual Speaker Mic Dock & Type Input */}
-      <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm space-y-4">
+      <div className="bg-white border border-slate-200/80 rounded-2xl p-3 sm:p-5 shadow-sm space-y-3 sm:space-y-4">
         {/* Microphone Controls */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
           {/* Speaker A Button */}
           <div className="relative flex flex-col items-center">
             <button
@@ -444,16 +444,16 @@ export const TwoWayTranslator: React.FC<TwoWayTranslatorProps> = ({ autoPlay }) 
                 }
               }}
               disabled={activeRecordingSpeaker === 'B' || isProcessing}
-              className={`w-full py-4 px-4 rounded-xl border transition-all flex flex-col items-center justify-center space-y-2 ${
+              className={`w-full py-3 sm:py-4 px-2 sm:px-4 rounded-xl border transition-all flex flex-col items-center justify-center space-y-1.5 sm:space-y-2 ${
                 activeRecordingSpeaker === 'A'
                   ? 'bg-rose-600 text-white border-rose-500 animate-pulse shadow-md shadow-rose-500/20'
                   : 'bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-600 shadow-md shadow-indigo-600/20 active:scale-95'
               }`}
             >
-              <div className="w-10 h-10 rounded-full bg-white/15 flex items-center justify-center">
-                <Mic className={`w-5 h-5 ${activeRecordingSpeaker === 'A' ? 'animate-bounce' : ''}`} />
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/15 flex items-center justify-center">
+                <Mic className={`w-4 h-4 sm:w-5 sm:h-5 ${activeRecordingSpeaker === 'A' ? 'animate-bounce' : ''}`} />
               </div>
-              <span className="text-xs font-semibold tracking-wider uppercase">
+              <span className="text-[10px] sm:text-xs font-semibold tracking-wider uppercase truncate max-w-full px-1">
                 {activeRecordingSpeaker === 'A' ? 'Listening...' : `Speak ${langA.name}`}
               </span>
             </button>
@@ -471,16 +471,16 @@ export const TwoWayTranslator: React.FC<TwoWayTranslatorProps> = ({ autoPlay }) 
                 }
               }}
               disabled={activeRecordingSpeaker === 'A' || isProcessing}
-              className={`w-full py-4 px-4 rounded-xl border transition-all flex flex-col items-center justify-center space-y-2 ${
+              className={`w-full py-3 sm:py-4 px-2 sm:px-4 rounded-xl border transition-all flex flex-col items-center justify-center space-y-1.5 sm:space-y-2 ${
                 activeRecordingSpeaker === 'B'
                   ? 'bg-rose-600 text-white border-rose-500 animate-pulse shadow-md shadow-rose-500/20'
                   : 'bg-slate-900 hover:bg-slate-800 text-white border-slate-900 shadow-md shadow-slate-900/10 active:scale-95'
               }`}
             >
-              <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
-                <Mic className={`w-5 h-5 text-emerald-400 ${activeRecordingSpeaker === 'B' ? 'animate-bounce' : ''}`} />
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                <Mic className={`w-4 h-4 sm:w-5 sm:h-5 text-emerald-400 ${activeRecordingSpeaker === 'B' ? 'animate-bounce' : ''}`} />
               </div>
-              <span className="text-xs font-semibold tracking-wider uppercase text-emerald-400">
+              <span className="text-[10px] sm:text-xs font-semibold tracking-wider uppercase text-emerald-400 truncate max-w-full px-1">
                 {activeRecordingSpeaker === 'B' ? 'Listening...' : `Speak ${langB.name}`}
               </span>
             </button>
@@ -488,60 +488,62 @@ export const TwoWayTranslator: React.FC<TwoWayTranslatorProps> = ({ autoPlay }) 
         </div>
 
         {/* Text Input Alternate Drawer */}
-        <div className="flex items-center space-x-2 pt-2 border-t border-slate-100">
-          <div className="flex items-center space-x-1 bg-slate-100 p-1 rounded-xl border border-slate-200">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-2 border-t border-slate-100">
+          <div className="flex items-center space-x-1.5 w-full">
+            <div className="flex items-center space-x-0.5 bg-slate-100 p-1 rounded-xl border border-slate-200 flex-shrink-0">
+              <button
+                onClick={() => setActiveSpeakerForText('A')}
+                className={`px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all ${
+                  activeSpeakerForText === 'A'
+                    ? 'bg-indigo-600 text-white shadow-xs'
+                    : 'text-slate-500 hover:text-slate-900'
+                }`}
+              >
+                For A
+              </button>
+              <button
+                onClick={() => setActiveSpeakerForText('B')}
+                className={`px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all ${
+                  activeSpeakerForText === 'B'
+                    ? 'bg-emerald-600 text-white shadow-xs'
+                    : 'text-slate-500 hover:text-slate-900'
+                }`}
+              >
+                For B
+              </button>
+            </div>
+
+            <input
+              type="text"
+              placeholder={`Type for Speaker ${activeSpeakerForText}...`}
+              value={textInput}
+              onChange={(e) => setTextInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleSendText();
+              }}
+              disabled={isProcessing}
+              className="flex-1 min-w-0 bg-slate-50 border border-slate-200 rounded-xl px-3 sm:px-4 py-2 sm:py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:bg-white"
+            />
+
             <button
-              onClick={() => setActiveSpeakerForText('A')}
-              className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all ${
-                activeSpeakerForText === 'A'
-                  ? 'bg-indigo-600 text-white shadow-xs'
-                  : 'text-slate-500 hover:text-slate-900'
-              }`}
+              onClick={handleSendText}
+              disabled={!textInput.trim() || isProcessing}
+              className="p-2 sm:p-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-30 text-white rounded-xl shadow-md transition-all flex-shrink-0"
             >
-              For A
-            </button>
-            <button
-              onClick={() => setActiveSpeakerForText('B')}
-              className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all ${
-                activeSpeakerForText === 'B'
-                  ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'text-slate-500 hover:text-slate-900'
-              }`}
-            >
-              For B
+              <Send className="w-4 h-4" />
             </button>
           </div>
-
-          <input
-            type="text"
-            placeholder={`Or type text for Speaker ${activeSpeakerForText}...`}
-            value={textInput}
-            onChange={(e) => setTextInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') handleSendText();
-            }}
-            disabled={isProcessing}
-            className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:bg-white"
-          />
-
-          <button
-            onClick={handleSendText}
-            disabled={!textInput.trim() || isProcessing}
-            className="p-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-30 text-white rounded-xl shadow-md transition-all"
-          >
-            <Send className="w-4 h-4" />
-          </button>
         </div>
 
-        {/* Status bar details from theme */}
-        <div className="flex justify-center gap-8 text-[10px] font-bold text-slate-400 uppercase tracking-widest pt-1">
-          <div className="flex items-center gap-1.5">
+        {/* Status bar details */}
+        <div className="flex flex-wrap justify-center gap-x-3 sm:gap-x-8 gap-y-1 text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-widest pt-1">
+          <div className="flex items-center gap-1">
             <span className="text-indigo-600 font-bold">Auto-Detect</span> ON
           </div>
-          <div className="flex items-center gap-1.5">
-            <span className="text-indigo-600 font-bold">Voice Synthesis</span> HD NATURAL
+          <div className="flex items-center gap-1">
+            <span className="text-indigo-600 font-bold">Voice Synthesis</span> HD
           </div>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1">
             <span className="text-indigo-600 font-bold">Latency</span> ~120ms
           </div>
         </div>
