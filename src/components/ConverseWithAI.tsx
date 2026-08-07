@@ -305,7 +305,7 @@ export const ConverseWithAI: React.FC<ConverseWithAIProps> = ({ autoPlay }) => {
     setMessages((prev) => [...prev, userMsgPlaceholder]);
 
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000);
+    const timeoutId = setTimeout(() => controller.abort('Voice processing timeout'), 45000);
 
     try {
       // Build conversation history format for prompt context
@@ -386,7 +386,7 @@ export const ConverseWithAI: React.FC<ConverseWithAIProps> = ({ autoPlay }) => {
                 ...m,
                 status: 'error',
                 errorMessage: isTimeout
-                  ? 'Timeout error: Voice processing took longer than 8 seconds. Please try again.'
+                  ? 'Request timed out waiting for AI response. Please try again.'
                   : 'Network connection issue during AI voice conversation.',
               }
             : m
@@ -417,7 +417,7 @@ export const ConverseWithAI: React.FC<ConverseWithAIProps> = ({ autoPlay }) => {
     setMessages((prev) => [...prev, userMsg]);
 
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000);
+    const timeoutId = setTimeout(() => controller.abort('Text processing timeout'), 45000);
 
     try {
       const historyContext = messages

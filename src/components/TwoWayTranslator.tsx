@@ -109,7 +109,7 @@ export const TwoWayTranslator: React.FC<TwoWayTranslatorProps> = ({ autoPlay }) 
         setIsProcessing(true);
 
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 8000);
+        const timeoutId = setTimeout(() => controller.abort('Audio translation timeout'), 45000);
 
         try {
           const response = await fetch('/api/translate-audio', {
@@ -174,7 +174,7 @@ export const TwoWayTranslator: React.FC<TwoWayTranslatorProps> = ({ autoPlay }) 
                     ...it,
                     status: 'error',
                     errorMessage: isTimeout
-                      ? 'Timeout error: Audio processing took longer than 8 seconds. Please try again.'
+                      ? 'Request timed out waiting for audio translation response. Please try again.'
                       : 'Server connection error during audio translation.',
                   }
                 : it
@@ -220,7 +220,7 @@ export const TwoWayTranslator: React.FC<TwoWayTranslatorProps> = ({ autoPlay }) 
     setIsProcessing(true);
 
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000);
+    const timeoutId = setTimeout(() => controller.abort('Text translation timeout'), 45000);
 
     try {
       const response = await fetch('/api/translate-text', {
@@ -283,7 +283,7 @@ export const TwoWayTranslator: React.FC<TwoWayTranslatorProps> = ({ autoPlay }) 
                 ...it,
                 status: 'error',
                 errorMessage: isTimeout
-                  ? 'Timeout error: Text processing took longer than 8 seconds. Please try again.'
+                  ? 'Request timed out waiting for text translation response. Please try again.'
                   : 'Server connection error during text translation.',
               }
             : it
