@@ -90,7 +90,13 @@ export function speakWebSpeech(
   const langPrefix = langCode.split('-')[0].toLowerCase();
   const matchedVoice =
     voices.find((v) => v.lang.toLowerCase() === langCode.toLowerCase()) ||
-    voices.find((v) => v.lang.toLowerCase().replace('_', '-').startsWith(langPrefix));
+    voices.find((v) => v.lang.toLowerCase().replace('_', '-').startsWith(langPrefix)) ||
+    voices.find((v) =>
+      langPrefix === 'zh' &&
+      (v.lang.toLowerCase().includes('zh') ||
+       v.name.toLowerCase().includes('chinese') ||
+       v.name.toLowerCase().includes('mandarin'))
+    );
 
   if (matchedVoice) {
     utterance.voice = matchedVoice;

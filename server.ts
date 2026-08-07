@@ -138,12 +138,17 @@ async function generateContentWithFallback(params: {
 }
 
 // Helper: Synthesize text into high quality TTS audio using Gemini TTS with fallback variants
-async function generateSyntheticSpeech(text: string, voiceName = 'Kore'): Promise<string | null> {
+async function generateSyntheticSpeech(text: string, voiceName = 'Kore', targetLanguage = ''): Promise<string | null> {
   const validVoices = ['Kore', 'Zephyr', 'Puck', 'Fenrir', 'Charon'];
   const chosenVoice = validVoices.includes(voiceName) ? voiceName : 'Kore';
 
   // Candidate variants for audio synthesis
   const ttsModels = ['gemini-2.5-flash', 'gemini-2.0-flash'];
+
+  // Construct explicit prompt text with language context so voice synthesizer pronounces native scripts (Chinese, Japanese, etc.) clearly
+  const promptText = targetLanguage
+    ? `Say the following text aloud in clear, natural, native ${targetLanguage}:\n${text}`
+    : `Say the following text aloud naturally:\n${text}`;
 
   const ttsPromise = (async () => {
     for (const modelName of ttsModels) {
@@ -155,7 +160,7 @@ async function generateSyntheticSpeech(text: string, voiceName = 'Kore'): Promis
         const ai = getAiClient();
         const ttsResponse = await ai.models.generateContent({
           model: modelName,
-          contents: [{ parts: [{ text }] }],
+          contents: [{ parts: [{ text: promptText }] }],
           config: {
             responseModalities: [Modality.AUDIO],
             speechConfig: {
@@ -180,7 +185,8 @@ async function generateSyntheticSpeech(text: string, voiceName = 'Kore'): Promis
     return null;
   })();
 
-  const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), 2000));
+  // Allow up to 10 seconds for high-quality audio synthesis instead of premature 2s abort
+  const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), 10000));
 
   return Promise.race([ttsPromise, timeoutPromise]);
 }
@@ -211,12 +217,16 @@ app.post('/api/translate-audio', async (req, res) => {
 
     const promptPart = {
       text: `Transcribe this spoken audio accurately and translate it into "${targetLanguage}"${sourceLanguageHint ? ` (the spoken language is likely ${sourceLanguageHint})` : ''}.
+Important:
+- "translatedText": Must be in standard native writing script for "${targetLanguage}" (e.g. Simplified Chinese characters for Chinese, Kanji/Kana for Japanese, Cyrillic for Russian). Do NOT output pinyin or latin alphabet in translatedText.
+- "pronunciationGuide": Provide the phonetic guide (e.g. Pinyin with tones for Chinese, Romaji for Japanese).
+
 JSON Schema:
 {
   "detectedLanguage": "Spoken language name",
   "detectedLanguageCode": "2-letter ISO code",
   "originalText": "Transcription in spoken language",
-  "translatedText": "Translation in ${targetLanguage}",
+  "translatedText": "Translation in ${targetLanguage} native script",
   "pronunciationGuide": "Phonetic guide or empty string",
   "confidence": 0.98
 }`,
@@ -246,10 +256,10 @@ JSON Schema:
 
     const parsedData = JSON.parse(analysisResult.text || '{}');
 
-    // Synthesize target language translation into speech
+    // Synthesize target language translation into speech with explicit language context
     let audioOutputUrl: string | null = null;
     if (parsedData.translatedText) {
-      audioOutputUrl = await generateSyntheticSpeech(parsedData.translatedText, voiceName);
+      audioOutputUrl = await generateSyntheticSpeech(parsedData.translatedText, voiceName, targetLanguage);
     }
 
     res.json({
@@ -283,13 +293,19 @@ app.post('/api/translate-text', async (req, res) => {
       return res.status(400).json({ error: 'Text string is required' });
     }
 
-    const prompt = `Translate text to ${targetLanguage} (Source constraint: ${sourceLanguage}).
+    const prompt = `Translate text into "${targetLanguage}" (Source language: ${sourceLanguage}).
+Important:
+- "translatedText": Must be in standard native writing script for "${targetLanguage}" (e.g. Simplified Chinese characters for Chinese, Kanji/Kana for Japanese, Cyrillic for Russian).
+- "pronunciationGuide": Provide the phonetic guide (e.g. Pinyin with tones for Chinese, Romaji for Japanese).
+
+Text: "${text.replace(/"/g, '\\"')}"
+
 JSON Schema:
 {
   "detectedLanguage": "Source language name",
   "detectedLanguageCode": "2-letter code",
   "originalText": "${text.replace(/"/g, '\\"')}",
-  "translatedText": "Translation in ${targetLanguage}",
+  "translatedText": "Translation in ${targetLanguage} native script",
   "pronunciationGuide": "Phonetic guide or empty string",
   "confidence": 0.99
 }`;
@@ -317,10 +333,10 @@ JSON Schema:
 
     const parsedData = JSON.parse(translationResult.text || '{}');
 
-    // Synthesize target language translation into speech
+    // Synthesize target language translation into speech with explicit language context
     let audioOutputUrl: string | null = null;
     if (parsedData.translatedText) {
-      audioOutputUrl = await generateSyntheticSpeech(parsedData.translatedText, voiceName);
+      audioOutputUrl = await generateSyntheticSpeech(parsedData.translatedText, voiceName, targetLanguage);
     }
 
     res.json({
@@ -348,12 +364,12 @@ JSON Schema:
 // Endpoint: Standalone TTS re-synthesis
 app.post('/api/synthesize-tts', async (req, res) => {
   try {
-    const { text, voiceName = 'Kore' } = req.body;
+    const { text, voiceName = 'Kore', targetLanguage = '' } = req.body;
     if (!text) {
       return res.status(400).json({ error: 'Text parameter is required' });
     }
 
-    const audioOutputUrl = await generateSyntheticSpeech(text, voiceName);
+    const audioOutputUrl = await generateSyntheticSpeech(text, voiceName, targetLanguage);
     res.json({ success: true, audioBase64: audioOutputUrl });
   } catch (error: any) {
     console.error('Error in /api/synthesize-tts:', error);
@@ -393,18 +409,18 @@ ${formattedHistory || '(No previous messages)'}
 Current User Message (${primaryLanguage}): "${userMessage.replace(/"/g, '\\"')}"
 
 Instructions:
-1. Generate an engaging, natural response in ${targetAiLanguage} ("aiResponseTargetLang") appropriate for your persona.
+1. Generate an engaging, natural response in native ${targetAiLanguage} script ("aiResponseTargetLang") appropriate for your persona.
 2. Translate your response into ${primaryLanguage} ("aiResponsePrimaryLang").
-3. Translate the user's message into ${targetAiLanguage} ("userMessageTranslation") so the user can learn how to express it in ${targetAiLanguage}.
-4. Provide a phonetic / pronunciation guide ("userPronunciationGuide") for the user's translated message in ${targetAiLanguage}.
+3. Translate the user's message into native ${targetAiLanguage} script ("userMessageTranslation").
+4. Provide a phonetic / pronunciation guide ("userPronunciationGuide") for the user's translated message.
 5. Provide a phonetic / pronunciation guide ("pronunciationGuide") for your response in ${targetAiLanguage}.
 6. Optionally provide a short, helpful 1-sentence grammar or vocabulary tip ("culturalNote").
 
 Return JSON schema:
 {
-  "aiResponseTargetLang": "Response in ${targetAiLanguage}",
+  "aiResponseTargetLang": "Response in ${targetAiLanguage} native script",
   "aiResponsePrimaryLang": "Translation in ${primaryLanguage}",
-  "userMessageTranslation": "User message translated to ${targetAiLanguage}",
+  "userMessageTranslation": "User message translated to ${targetAiLanguage} native script",
   "userPronunciationGuide": "Phonetic guide for user message translation",
   "pronunciationGuide": "Phonetic guide for AI response",
   "culturalNote": "Optional 1-sentence tip"
@@ -436,7 +452,7 @@ Return JSON schema:
     // Synthesize TTS audio for the AI's target language reply
     let audioOutputUrl: string | null = null;
     if (parsedData.aiResponseTargetLang) {
-      audioOutputUrl = await generateSyntheticSpeech(parsedData.aiResponseTargetLang, voiceName);
+      audioOutputUrl = await generateSyntheticSpeech(parsedData.aiResponseTargetLang, voiceName, targetAiLanguage);
     }
 
     res.json({
@@ -501,9 +517,9 @@ ${formattedHistory || '(No previous messages)'}
 
 Task:
 1. Transcribe what the user said in the audio ("userOriginalText").
-2. Translate the user's spoken words into ${targetAiLanguage} ("userTranslationInTargetLang").
+2. Translate the user's spoken words into native ${targetAiLanguage} script ("userTranslationInTargetLang").
 3. Provide a phonetic pronunciation guide for user's translated message ("userPronunciationGuide").
-4. Generate a natural, conversational reply in ${targetAiLanguage} ("aiResponseTargetLang").
+4. Generate a natural, conversational reply in native ${targetAiLanguage} script ("aiResponseTargetLang").
 5. Translate your reply into ${primaryLanguage} ("aiResponsePrimaryLang").
 6. Provide a phonetic pronunciation guide for your reply ("pronunciationGuide").
 7. Provide a short 1-sentence learning/cultural tip ("culturalNote").
@@ -511,9 +527,9 @@ Task:
 Return JSON schema:
 {
   "userOriginalText": "Transcription of user audio",
-  "userTranslationInTargetLang": "Translation of user message into ${targetAiLanguage}",
+  "userTranslationInTargetLang": "Translation of user message into ${targetAiLanguage} native script",
   "userPronunciationGuide": "Phonetic guide for user message translation",
-  "aiResponseTargetLang": "AI reply in ${targetAiLanguage}",
+  "aiResponseTargetLang": "AI reply in ${targetAiLanguage} native script",
   "aiResponsePrimaryLang": "Translation of AI reply in ${primaryLanguage}",
   "pronunciationGuide": "Phonetic guide for AI reply",
   "culturalNote": "Optional 1-sentence tip"
@@ -547,7 +563,7 @@ Return JSON schema:
     // Synthesize TTS audio for the AI's target language reply
     let audioOutputUrl: string | null = null;
     if (parsedData.aiResponseTargetLang) {
-      audioOutputUrl = await generateSyntheticSpeech(parsedData.aiResponseTargetLang, voiceName);
+      audioOutputUrl = await generateSyntheticSpeech(parsedData.aiResponseTargetLang, voiceName, targetAiLanguage);
     }
 
     res.json({
