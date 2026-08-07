@@ -340,6 +340,7 @@ export const ConverseWithAI: React.FC<ConverseWithAIProps> = ({ autoPlay }) => {
           timestamp: Date.now(),
           userOriginalText: data.userOriginalText,
           userTranslationInTargetLang: data.userTranslationInTargetLang,
+          userPronunciationGuide: data.userPronunciationGuide,
           status: 'done',
         };
 
@@ -447,7 +448,11 @@ export const ConverseWithAI: React.FC<ConverseWithAIProps> = ({ autoPlay }) => {
         setMessages((prev) =>
           prev.map((m) =>
             m.id === tempMsgId
-              ? { ...m, userTranslationInTargetLang: data.userTranslationInTargetLang }
+              ? {
+                  ...m,
+                  userTranslationInTargetLang: data.userTranslationInTargetLang,
+                  userPronunciationGuide: data.userPronunciationGuide,
+                }
               : m
           )
         );
@@ -591,46 +596,54 @@ export const ConverseWithAI: React.FC<ConverseWithAIProps> = ({ autoPlay }) => {
                     <p className="text-sm font-medium">{msg.userOriginalText}</p>
 
                     {msg.userTranslationInTargetLang && (
-                      <div className="mt-2 pt-2 border-t border-indigo-400/40 text-xs text-indigo-100 flex items-center justify-between gap-2">
-                        <div className="flex items-center space-x-1.5 flex-1 min-w-0">
-                          <Sparkles className="w-3.5 h-3.5 text-indigo-200 flex-shrink-0" />
-                          <span>
-                            <strong className="font-semibold text-white">{aiLang.name}:</strong>{' '}
-                            {msg.userTranslationInTargetLang}
-                          </span>
+                      <div className="mt-2 pt-2 border-t border-indigo-400/40 text-xs text-indigo-100 space-y-1.5">
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center space-x-1.5 flex-1 min-w-0">
+                            <Sparkles className="w-3.5 h-3.5 text-indigo-200 flex-shrink-0" />
+                            <span>
+                              <strong className="font-semibold text-white">{aiLang.name}:</strong>{' '}
+                              {msg.userTranslationInTargetLang}
+                            </span>
+                          </div>
+
+                          <div className="flex items-center space-x-1.5 flex-shrink-0">
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handlePlayMessageAudio(
+                                  `${msg.id}-user-trans`,
+                                  msg.userTranslationInTargetLang!,
+                                  aiLang.name
+                                )
+                              }
+                              className={`flex items-center space-x-1 px-2 py-0.5 rounded-md text-[11px] font-medium transition-all ${
+                                playingMsgId === `${msg.id}-user-trans`
+                                  ? 'bg-amber-400 text-slate-900 shadow-xs font-semibold'
+                                  : 'bg-indigo-500/80 hover:bg-indigo-400 text-indigo-100 hover:text-white border border-indigo-400/50'
+                              }`}
+                              title={`Listen to ${aiLang.name} translation`}
+                            >
+                              <Volume2 className={`w-3 h-3 ${playingMsgId === `${msg.id}-user-trans` ? 'animate-bounce' : ''}`} />
+                              <span>{playingMsgId === `${msg.id}-user-trans` ? 'Stop' : 'Listen'}</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={togglePlaybackSpeed}
+                              className="px-2 py-0.5 bg-indigo-500/80 hover:bg-indigo-400 text-indigo-100 rounded-md text-[11px] font-mono border border-indigo-400/50 transition-colors flex items-center space-x-1"
+                              title="Voice playback speed (1x, 0.75x, 0.5x)"
+                            >
+                              <FastForward className="w-3 h-3 text-indigo-200" />
+                              <span>{playbackSpeed}x</span>
+                            </button>
+                          </div>
                         </div>
 
-                        <div className="flex items-center space-x-1.5 flex-shrink-0">
-                          <button
-                            type="button"
-                            onClick={() =>
-                              handlePlayMessageAudio(
-                                `${msg.id}-user-trans`,
-                                msg.userTranslationInTargetLang!,
-                                aiLang.name
-                              )
-                            }
-                            className={`flex items-center space-x-1 px-2 py-0.5 rounded-md text-[11px] font-medium transition-all ${
-                              playingMsgId === `${msg.id}-user-trans`
-                                ? 'bg-amber-400 text-slate-900 shadow-xs font-semibold'
-                                : 'bg-indigo-500/80 hover:bg-indigo-400 text-indigo-100 hover:text-white border border-indigo-400/50'
-                            }`}
-                            title={`Listen to ${aiLang.name} translation`}
-                          >
-                            <Volume2 className={`w-3 h-3 ${playingMsgId === `${msg.id}-user-trans` ? 'animate-bounce' : ''}`} />
-                            <span>{playingMsgId === `${msg.id}-user-trans` ? 'Stop' : 'Listen'}</span>
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={togglePlaybackSpeed}
-                            className="px-2 py-0.5 bg-indigo-500/80 hover:bg-indigo-400 text-indigo-100 rounded-md text-[11px] font-mono border border-indigo-400/50 transition-colors flex items-center space-x-1"
-                            title="Voice playback speed (1x, 0.75x, 0.5x)"
-                          >
-                            <FastForward className="w-3 h-3 text-indigo-200" />
-                            <span>{playbackSpeed}x</span>
-                          </button>
-                        </div>
+                        {msg.userPronunciationGuide && (
+                          <div className="text-[11px] italic text-indigo-100/95 font-mono bg-indigo-700/60 px-2.5 py-1 rounded-md border border-indigo-400/40 shadow-xs">
+                            Pronunciation: {msg.userPronunciationGuide}
+                          </div>
+                        )}
                       </div>
                     )}
 

@@ -396,15 +396,17 @@ Instructions:
 1. Generate an engaging, natural response in ${targetAiLanguage} ("aiResponseTargetLang") appropriate for your persona.
 2. Translate your response into ${primaryLanguage} ("aiResponsePrimaryLang").
 3. Translate the user's message into ${targetAiLanguage} ("userMessageTranslation") so the user can learn how to express it in ${targetAiLanguage}.
-4. Provide a phonetic / pronunciation guide ("pronunciationGuide") for your response in ${targetAiLanguage}.
-5. Optionally provide a short, helpful 1-sentence grammar or vocabulary tip ("culturalNote").
+4. Provide a phonetic / pronunciation guide ("userPronunciationGuide") for the user's translated message in ${targetAiLanguage}.
+5. Provide a phonetic / pronunciation guide ("pronunciationGuide") for your response in ${targetAiLanguage}.
+6. Optionally provide a short, helpful 1-sentence grammar or vocabulary tip ("culturalNote").
 
 Return JSON schema:
 {
   "aiResponseTargetLang": "Response in ${targetAiLanguage}",
   "aiResponsePrimaryLang": "Translation in ${primaryLanguage}",
   "userMessageTranslation": "User message translated to ${targetAiLanguage}",
-  "pronunciationGuide": "Phonetic guide",
+  "userPronunciationGuide": "Phonetic guide for user message translation",
+  "pronunciationGuide": "Phonetic guide for AI response",
   "culturalNote": "Optional 1-sentence tip"
 }`;
 
@@ -420,6 +422,7 @@ Return JSON schema:
             aiResponseTargetLang: { type: Type.STRING },
             aiResponsePrimaryLang: { type: Type.STRING },
             userMessageTranslation: { type: Type.STRING },
+            userPronunciationGuide: { type: Type.STRING },
             pronunciationGuide: { type: Type.STRING },
             culturalNote: { type: Type.STRING },
           },
@@ -440,6 +443,7 @@ Return JSON schema:
       success: true,
       userOriginalText: userMessage,
       userTranslationInTargetLang: parsedData.userMessageTranslation || '',
+      userPronunciationGuide: parsedData.userPronunciationGuide || '',
       aiResponseTargetLang: parsedData.aiResponseTargetLang || '',
       aiResponsePrimaryLang: parsedData.aiResponsePrimaryLang || '',
       pronunciationGuide: parsedData.pronunciationGuide || '',
@@ -498,18 +502,20 @@ ${formattedHistory || '(No previous messages)'}
 Task:
 1. Transcribe what the user said in the audio ("userOriginalText").
 2. Translate the user's spoken words into ${targetAiLanguage} ("userTranslationInTargetLang").
-3. Generate a natural, conversational reply in ${targetAiLanguage} ("aiResponseTargetLang").
-4. Translate your reply into ${primaryLanguage} ("aiResponsePrimaryLang").
-5. Provide a phonetic pronunciation guide for your reply ("pronunciationGuide").
-6. Provide a short 1-sentence learning/cultural tip ("culturalNote").
+3. Provide a phonetic pronunciation guide for user's translated message ("userPronunciationGuide").
+4. Generate a natural, conversational reply in ${targetAiLanguage} ("aiResponseTargetLang").
+5. Translate your reply into ${primaryLanguage} ("aiResponsePrimaryLang").
+6. Provide a phonetic pronunciation guide for your reply ("pronunciationGuide").
+7. Provide a short 1-sentence learning/cultural tip ("culturalNote").
 
 Return JSON schema:
 {
   "userOriginalText": "Transcription of user audio",
   "userTranslationInTargetLang": "Translation of user message into ${targetAiLanguage}",
+  "userPronunciationGuide": "Phonetic guide for user message translation",
   "aiResponseTargetLang": "AI reply in ${targetAiLanguage}",
   "aiResponsePrimaryLang": "Translation of AI reply in ${primaryLanguage}",
-  "pronunciationGuide": "Phonetic guide",
+  "pronunciationGuide": "Phonetic guide for AI reply",
   "culturalNote": "Optional 1-sentence tip"
 }`,
     };
@@ -525,6 +531,7 @@ Return JSON schema:
           properties: {
             userOriginalText: { type: Type.STRING },
             userTranslationInTargetLang: { type: Type.STRING },
+            userPronunciationGuide: { type: Type.STRING },
             aiResponseTargetLang: { type: Type.STRING },
             aiResponsePrimaryLang: { type: Type.STRING },
             pronunciationGuide: { type: Type.STRING },
@@ -547,6 +554,7 @@ Return JSON schema:
       success: true,
       userOriginalText: parsedData.userOriginalText || 'Spoken audio message',
       userTranslationInTargetLang: parsedData.userTranslationInTargetLang || '',
+      userPronunciationGuide: parsedData.userPronunciationGuide || '',
       aiResponseTargetLang: parsedData.aiResponseTargetLang || '',
       aiResponsePrimaryLang: parsedData.aiResponsePrimaryLang || '',
       pronunciationGuide: parsedData.pronunciationGuide || '',

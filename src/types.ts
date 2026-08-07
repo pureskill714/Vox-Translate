@@ -28,6 +28,7 @@ export interface ChatMessage {
   timestamp: number;
   userOriginalText?: string;
   userTranslationInTargetLang?: string;
+  userPronunciationGuide?: string;
   aiResponseTargetLang?: string;
   aiResponsePrimaryLang?: string;
   pronunciationGuide?: string;
